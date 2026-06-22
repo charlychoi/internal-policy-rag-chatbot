@@ -22,7 +22,10 @@ st.caption("Open Notebook RAG 연동 준비 · 파일 업로드 · 규정 온톨
 client = OpenNotebookClient()
 on_ready = client.health()
 st.sidebar.write("Open Notebook API")
-st.sidebar.success("연결됨") if on_ready else st.sidebar.warning("미연결: 로컬 fallback 사용")
+if on_ready:
+    st.sidebar.success("연결됨")
+else:
+    st.sidebar.warning("미연결: 로컬 fallback 사용")
 st.sidebar.code(client.api_base)
 
 uploaded_files = st.file_uploader("규정집 Markdown/TXT 파일 업로드", type=["md", "txt"], accept_multiple_files=True)
