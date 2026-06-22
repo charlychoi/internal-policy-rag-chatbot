@@ -1,0 +1,10 @@
+.env
+.venv/
+venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.DS_Store
+open-notebook-runtime/surreal_data/
+open-notebook-runtime/notebook_data/
+.streamlit/secrets.toml
