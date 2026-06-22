@@ -7,6 +7,7 @@ from collections import Counter
 
 from policy_ontology import PolicyClassification, classify_policy_query, build_safe_response
 from open_notebook_client import OpenNotebookClient
+from document_loader import load_policy_documents
 
 _WORD_RE = re.compile(r"[가-힣A-Za-z0-9]+")
 
@@ -22,12 +23,7 @@ class PolicyAnswer:
 
 
 def load_local_policy_docs(paths: list[Path]) -> list[dict]:
-    docs = []
-    for path in paths:
-        if path.suffix.lower() not in {".md", ".txt"}:
-            continue
-        docs.append({"title": path.name, "content": path.read_text(encoding="utf-8"), "source": str(path)})
-    return docs
+    return load_policy_documents(paths)
 
 
 def answer_policy_question(

@@ -8,7 +8,8 @@ import streamlit as st
 
 sys.path.append(str(Path(__file__).parent))
 from open_notebook_client import OpenNotebookClient
-from policy_rag_chain import load_local_policy_docs, answer_policy_question
+from document_loader import SUPPORTED_SOURCE_EXTENSIONS, load_policy_documents
+from policy_rag_chain import answer_policy_question
 from policy_ontology import classify_policy_query
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -28,7 +29,12 @@ else:
     st.sidebar.warning("미연결: 로컬 fallback 사용")
 st.sidebar.code(client.api_base)
 
-uploaded_files = st.file_uploader("규정집 Markdown/TXT 파일 업로드", type=["md", "txt"], accept_multiple_files=True)
+uploaded_files = st.file_uploader(
+    "규정집 문서 업로드",
+    type=SUPPORTED_SOURCE_EXTENSIONS,
+    accept_multiple_files=True,
+    help="Open Notebook/LiteParse 기준: PDF, DOCX, XLSX, PPTX, 이미지와 Markdown/TXT를 받습니다. 로컬 fallback은 텍스트 추출 가능한 형식부터 검색합니다.",
+)
 paths = []
 if uploaded_files:
     tmpdir = Path(tempfile.mkdtemp(prefix="policy-docs-"))
@@ -45,8 +51,10 @@ if uploaded_files:
 else:
     paths = SAMPLE_DOCS
 
-local_docs = load_local_policy_docs(paths)
+local_docs = load_policy_documents(paths)
 st.sidebar.metric("로드된 문서", len(local_docs))
+with st.sidebar.expander("지원 업로드 형식"):
+    st.write(", ".join(f".{ext}" for ext in SUPPORTED_SOURCE_EXTENSIONS))
 
 question = st.text_input("질문", "입사 1년 미만 직원도 연차를 쓸 수 있나요?")
 if st.button("규정 검색하기", type="primary") and question.strip():
